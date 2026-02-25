@@ -1,0 +1,51 @@
+########################
+# Python
+########################
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.python-version
+
+########################
+# Virtual environments
+########################
+venv/
+.venv/
+env/
+.env/
+
+########################
+# Node / frontend
+########################
+node_modules/
+dist/
+build/
+
+########################
+# Data and large artifacts
+########################
+data/accepted_2007_to_2018Q4.csv
+risk_api/data/processed_data.csv
+data/
+**/data/
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.joblib
+*.pkl
+*.pickle
+
+########################
+# IDE / OS
+########################
+.idea/
+.vscode/
+*.log
+*.DS_Store
+Thumbs.db
+
