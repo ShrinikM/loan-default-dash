@@ -1,12 +1,16 @@
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
-function getColor(pdScore) {
+interface RiskGaugeProps {
+  pdScore?: number | string;
+}
+
+function getColor(pdScore: number): string {
   if (pdScore < 0.4) return '#16a34a';
   if (pdScore <= 0.65) return '#d97706';
   return '#dc2626';
 }
 
-export default function RiskGauge({ pdScore }) {
+export default function RiskGauge({ pdScore }: RiskGaugeProps) {
   const value = Math.min(1, Math.max(0, Number(pdScore) ?? 0));
   const pct = (value * 100).toFixed(1);
   const color = getColor(value);
@@ -34,7 +38,6 @@ export default function RiskGauge({ pdScore }) {
             >
               {data.map((entry, index) => (
                 <Cell
-                  // filled segment uses risk color, remainder is light gray
                   key={index}
                   fill={index === 0 ? color : '#f1f5f9'}
                   stroke="none"

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { getDashboardStats, getMacroConditions } from './api/loanApi.js';
-import Layout from './components/Layout.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import NewApplication from './pages/NewApplication.jsx';
-import Applications from './pages/Applications.jsx';
+import { getDashboardStats, getMacroConditions } from './api/loanApi';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import NewApplication from './pages/NewApplication';
+import Applications from './pages/Applications';
+
+type PageKey = 'dashboard' | 'new' | 'applications';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,7 +15,7 @@ const queryClient = new QueryClient({
 });
 
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [currentPage, setCurrentPage] = useState<PageKey>('dashboard');
 
   const { data: stats } = useQuery({
     queryKey: ['dashboardStats'],

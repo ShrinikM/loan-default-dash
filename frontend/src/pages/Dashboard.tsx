@@ -8,16 +8,32 @@ import {
   Tooltip,
   Cell,
 } from 'recharts';
-import { getDashboardStats, getAllApplications } from '../api/loanApi.js';
-import StatCard from '../components/StatCard.jsx';
-import DecisionBadge from '../components/DecisionBadge.jsx';
+import { getDashboardStats, getAllApplications } from '../api/loanApi';
+import StatCard from '../components/StatCard';
+import DecisionBadge from '../components/DecisionBadge';
 
-function capitalize(str) {
+type PageKey = 'dashboard' | 'new' | 'applications';
+
+interface DashboardProps {
+  onNavigate: (page: PageKey) => void;
+}
+
+interface ApplicationItem {
+  id: string | number;
+  createdAt?: string;
+  loanAmnt?: number;
+  purpose?: string;
+  decision?: string;
+  pdScore?: number;
+  riskTier?: string | null;
+}
+
+function capitalize(str: string | undefined | null): string {
   if (!str) return '';
   return String(str).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function formatMoney(n) {
+function formatMoney(n: number | null | undefined): string {
   if (n == null) return '—';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -26,7 +42,7 @@ function formatMoney(n) {
   }).format(Number(n));
 }
 
-function pdColor(pdScore) {
+function pdColor(pdScore: number | undefined | null): string {
   if (pdScore == null) return 'text-slate-500';
   const v = Number(pdScore);
   if (v < 0.4) return 'text-green-600';
@@ -34,7 +50,7 @@ function pdColor(pdScore) {
   return 'text-red-600';
 }
 
-function tierColor(tier) {
+function tierColor(tier: string | undefined | null): string {
   if (!tier) return 'text-slate-600';
   const t = String(tier).toLowerCase();
   if (t === 'low') return 'text-green-600';
@@ -42,7 +58,7 @@ function tierColor(tier) {
   return 'text-red-600';
 }
 
-export default function Dashboard({ onNavigate }) {
+export default function Dashboard({ onNavigate }: DashboardProps) {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['dashboardStats'],
     queryFn: () => getDashboardStats().then((r) => r.data),
@@ -50,7 +66,7 @@ export default function Dashboard({ onNavigate }) {
 
   const { data: applications = [], isLoading: appsLoading } = useQuery({
     queryKey: ['applications'],
-    queryFn: () => getAllApplications().then((r) => r.data),
+    queryFn: () => getAllApplications().then((r) => r.data as ApplicationItem[]),
   });
 
   const recent = applications.slice(0, 5);
@@ -66,7 +82,7 @@ export default function Dashboard({ onNavigate }) {
     { name: 'Rejected', count: rejected, fill: '#ef4444' },
   ];
 
-  const formatDate = (d) => {
+  const formatDate = (d: string | undefined | null): string => {
     if (!d) return '—';
     try {
       return new Date(d).toLocaleDateString('en-US', {
@@ -141,8 +157,8 @@ export default function Dashboard({ onNavigate }) {
                     borderRadius: 0,
                     padding: '12px',
                   }}
-                  formatter={(value) => [value, 'Count']}
-                  labelFormatter={(label) => label}
+                  formatter={(value: number) => [value, 'Count']}
+                  labelFormatter={(label: string) => label}
                 />
                 <Bar dataKey="count" radius={[0, 0, 0, 0]}>
                   {barData.map((entry, index) => (

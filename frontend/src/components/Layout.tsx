@@ -1,17 +1,27 @@
+type PageKey = 'dashboard' | 'new' | 'applications';
+
+interface LayoutProps {
+  onNavigate: (page: PageKey) => void;
+  activePage: string;
+  unemploymentRate?: number | null;
+  delinqRate?: number | null;
+  children?: React.ReactNode;
+}
+
 export default function Layout({
   onNavigate,
   activePage,
   unemploymentRate,
   delinqRate,
   children,
-}) {
-  const navItems = [
+}: LayoutProps) {
+  const navItems: { page: PageKey; label: string }[] = [
     { page: 'dashboard', label: 'Dashboard' },
     { page: 'new', label: 'New Application' },
     { page: 'applications', label: 'All Applications' },
   ];
 
-  const formatRate = (v) =>
+  const formatRate = (v: number | null | undefined): string =>
     v != null ? `${Number(v).toFixed(2)}%` : '—';
 
   return (
@@ -48,7 +58,6 @@ export default function Layout({
                           ? 'border-l-4 border-[#0066cc] bg-[#004099] text-white'
                           : 'text-blue-100 hover:bg-[#004099] hover:text-white'
                       }`}
-                      style={isActive ? undefined : undefined}
                     >
                       {label}
                     </button>
@@ -66,13 +75,13 @@ export default function Layout({
               <div className="flex justify-between">
                 <span className="text-blue-100">Unemployment Rate</span>
                 <span className="font-semibold text-white">
-                  {formatRate(unemploymentRate)}
+                  {formatRate(unemploymentRate ?? null)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-blue-100">Delinquency Rate</span>
                 <span className="font-semibold text-white">
-                  {formatRate(delinqRate)}
+                  {formatRate(delinqRate ?? null)}
                 </span>
               </div>
             </div>

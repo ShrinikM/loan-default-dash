@@ -1,4 +1,8 @@
-export default function DecisionBadge({ decision }) {
+interface DecisionBadgeProps {
+  decision?: string;
+}
+
+export default function DecisionBadge({ decision }: DecisionBadgeProps) {
   const normalized = decision?.toLowerCase?.() || '';
   let label = '—';
   let style =

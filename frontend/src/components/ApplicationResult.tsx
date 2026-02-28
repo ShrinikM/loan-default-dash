@@ -1,14 +1,47 @@
-import RiskGauge from './RiskGauge.jsx';
-import DecisionBadge from './DecisionBadge.jsx';
+import RiskGauge from './RiskGauge';
+import DecisionBadge from './DecisionBadge';
 
-function capitalize(str) {
+interface ImputedFields {
+  revol_util?: number | null;
+  open_acc?: number | null;
+}
+
+export interface ApplicationResultData {
+  id?: string | number;
+  decision?: string;
+  pdScore?: number;
+  aiSummary?: string;
+  topRiskFactors?: string[];
+  imputedFields?: ImputedFields;
+  loanAmnt?: number;
+  term?: string;
+  purpose?: string;
+  annualInc?: number;
+  dti?: number;
+  empLength?: number | null;
+  homeOwnership?: string;
+  addrState?: string;
+  applicationType?: string;
+  ficoRangeLow?: number | null;
+  ficoRangeHigh?: number | null;
+  unemploymentRate?: number | null;
+  delinqRate?: number | null;
+  ficoWarning?: boolean;
+}
+
+interface DetailRowProps {
+  label: string;
+  value: string | number;
+}
+
+function capitalize(str: string | undefined | null): string {
   if (!str) return '';
   return String(str)
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function formatMoney(n) {
+function formatMoney(n: number | null | undefined): string {
   if (n == null) return '—';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -17,12 +50,12 @@ function formatMoney(n) {
   }).format(Number(n));
 }
 
-function formatPct(n) {
+function formatPct(n: number | null | undefined): string {
   if (n == null) return '—';
   return `${Number(n).toFixed(1)}%`;
 }
 
-function DetailRow({ label, value }) {
+function DetailRow({ label, value }: DetailRowProps) {
   return (
     <div className="flex justify-between border-b border-slate-50 py-3 first:pt-0 last:border-b-0">
       <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -33,7 +66,12 @@ function DetailRow({ label, value }) {
   );
 }
 
-export default function ApplicationResult({ result, onNewApplication }) {
+interface ApplicationResultProps {
+  result: ApplicationResultData | null;
+  onNewApplication: () => void;
+}
+
+export default function ApplicationResult({ result, onNewApplication }: ApplicationResultProps) {
   if (!result) return null;
 
   const idStr = result.id ? String(result.id).slice(0, 8) : '—';
@@ -80,14 +118,14 @@ export default function ApplicationResult({ result, onNewApplication }) {
           </h3>
           <div className="mt-4">
             <DetailRow label="Loan Amount" value={formatMoney(result.loanAmnt)} />
-            <DetailRow label="Term" value={result.term} />
+            <DetailRow label="Term" value={result.term ?? '—'} />
             <DetailRow label="Purpose" value={capitalize(result.purpose)} />
             <DetailRow label="Annual Income" value={formatMoney(result.annualInc)} />
             <DetailRow label="DTI Ratio" value={result.dti != null ? `${Number(result.dti).toFixed(2)}%` : '—'} />
             <DetailRow label="Employment Length" value={result.empLength != null ? `${result.empLength} yrs` : '—'} />
-            <DetailRow label="Home Ownership" value={result.homeOwnership} />
-            <DetailRow label="State" value={result.addrState} />
-            <DetailRow label="Application Type" value={result.applicationType} />
+            <DetailRow label="Home Ownership" value={result.homeOwnership ?? '—'} />
+            <DetailRow label="State" value={result.addrState ?? '—'} />
+            <DetailRow label="Application Type" value={result.applicationType ?? '—'} />
           </div>
         </div>
 

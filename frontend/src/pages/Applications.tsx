@@ -1,14 +1,34 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getAllApplications } from '../api/loanApi.js';
-import DecisionBadge from '../components/DecisionBadge.jsx';
+import { getAllApplications } from '../api/loanApi';
+import DecisionBadge from '../components/DecisionBadge';
 
-function capitalize(str) {
+type PageKey = 'dashboard' | 'new' | 'applications';
+
+interface ApplicationsProps {
+  onNavigate: (page: PageKey) => void;
+}
+
+interface ApplicationItem {
+  id: string | number;
+  createdAt?: string;
+  loanAmnt?: number;
+  purpose?: string;
+  decision?: string;
+  pdScore?: number;
+  ficoRangeLow?: number | null;
+  ficoRangeHigh?: number | null;
+  dti?: number | null;
+  addrState?: string | null;
+  riskTier?: string | null;
+}
+
+function capitalize(str: string | undefined | null): string {
   if (!str) return '';
   return String(str).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function formatMoney(n) {
+function formatMoney(n: number | null | undefined): string {
   if (n == null) return '—';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -17,7 +37,7 @@ function formatMoney(n) {
   }).format(Number(n));
 }
 
-function formatDate(d) {
+function formatDate(d: string | undefined | null): string {
   if (!d) return '—';
   try {
     return new Date(d).toLocaleDateString('en-US', {
@@ -30,7 +50,7 @@ function formatDate(d) {
   }
 }
 
-function pdColor(pdScore) {
+function pdColor(pdScore: number | undefined | null): string {
   if (pdScore == null) return 'text-slate-500';
   const v = Number(pdScore);
   if (v < 0.4) return 'text-green-600';
@@ -38,7 +58,7 @@ function pdColor(pdScore) {
   return 'text-red-600';
 }
 
-function tierColor(tier) {
+function tierColor(tier: string | undefined | null): string {
   if (!tier) return 'text-slate-600';
   const t = String(tier).toLowerCase();
   if (t === 'low') return 'text-green-600';
@@ -46,14 +66,14 @@ function tierColor(tier) {
   return 'text-red-600';
 }
 
-const FILTERS = ['all', 'approve', 'review', 'reject'];
+const FILTERS = ['all', 'approve', 'review', 'reject'] as const;
 
-export default function Applications({ onNavigate }) {
-  const [filter, setFilter] = useState('all');
+export default function Applications({ onNavigate }: ApplicationsProps) {
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>('all');
 
   const { data: applications = [], isLoading, error } = useQuery({
     queryKey: ['applications'],
-    queryFn: () => getAllApplications().then((r) => r.data),
+    queryFn: () => getAllApplications().then((r) => r.data as ApplicationItem[]),
   });
 
   const filtered =
@@ -98,7 +118,7 @@ export default function Applications({ onNavigate }) {
 
       {error && (
         <div className="mb-6 border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          {error.message ?? 'Failed to load applications'}
+          {(error as Error).message ?? 'Failed to load applications'}
         </div>
       )}
 

@@ -1,4 +1,11 @@
-export default function StatCard({ title, value, subtitle, accentColor }) {
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  subtitle?: string | null;
+  accentColor?: string;
+}
+
+export default function StatCard({ title, value, subtitle, accentColor }: StatCardProps) {
   return (
     <div
       className="border border-slate-200 bg-white p-6"

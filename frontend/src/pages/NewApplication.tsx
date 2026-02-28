@@ -1,20 +1,26 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { submitLoanApplication } from '../api/loanApi.js';
-import LoanForm from '../components/LoanForm.jsx';
-import ApplicationResult from '../components/ApplicationResult.jsx';
+import { submitLoanApplication } from '../api/loanApi';
+import LoanForm from '../components/LoanForm';
+import ApplicationResult, { type ApplicationResultData } from '../components/ApplicationResult';
 
-export default function NewApplication({ onNavigate }) {
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+type PageKey = 'dashboard' | 'new' | 'applications';
+
+interface NewApplicationProps {
+  onNavigate: (page: PageKey) => void;
+}
+
+export default function NewApplication({ onNavigate }: NewApplicationProps) {
+  const [result, setResult] = useState<ApplicationResultData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: submitLoanApplication,
-    onSuccess: (res) => {
+    onSuccess: (res: { data: ApplicationResultData }) => {
       setResult(res.data);
       setError(null);
     },
-    onError: (err) => {
+    onError: (err: { response?: { data?: { message?: string } }; message?: string }) => {
       setError(err.response?.data?.message ?? err.message ?? 'Submission failed');
       setResult(null);
     },

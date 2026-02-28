@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, FormEvent } from 'react';
 
 const TERMS = ['36 months', '60 months'];
 
@@ -39,7 +39,32 @@ const labelClass = 'mb-1 block text-sm font-medium text-slate-700';
 const sectionLabelClass =
   'mb-6 border-b border-slate-200 pb-2 text-xs font-semibold uppercase tracking-widest text-slate-400';
 
-function Section({ title, children }) {
+interface LoanFormPayload {
+  loanAmnt: number;
+  term: string;
+  purpose: string;
+  annualInc: number;
+  empLength: number;
+  homeOwnership: string;
+  verificationStatus: string;
+  applicationType: string;
+  addrState: string;
+  dti: number;
+  ficoRangeLow: number;
+  ficoRangeHigh: number;
+}
+
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+interface LoanFormProps {
+  onSubmit: (payload: LoanFormPayload) => void;
+  isLoading?: boolean;
+}
+
+function Section({ title, children }: SectionProps) {
   return (
     <div className="space-y-4">
       <h3 className={sectionLabelClass}>{title}</h3>
@@ -48,7 +73,7 @@ function Section({ title, children }) {
   );
 }
 
-export default function LoanForm({ onSubmit, isLoading }) {
+export default function LoanForm({ onSubmit, isLoading }: LoanFormProps) {
   const [loanAmnt, setLoanAmnt] = useState('');
   const [term, setTerm] = useState('36 months');
   const [purpose, setPurpose] = useState('');
@@ -75,9 +100,9 @@ export default function LoanForm({ onSubmit, isLoading }) {
     return Number.isFinite(low) && low < 660;
   }, [ficoRangeLow]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const payload = {
+    const payload: LoanFormPayload = {
       loanAmnt: parseFloat(loanAmnt) || 0,
       term,
       purpose,
